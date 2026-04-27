@@ -10,9 +10,9 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/sw33tLie/bbscope/v2/internal/utils"
-	"github.com/sw33tLie/bbscope/v2/pkg/reports"
-	"github.com/sw33tLie/bbscope/v2/pkg/whttp"
+	"github.com/ounissi-zakaria/bbscope/internal/utils"
+	"github.com/ounissi-zakaria/bbscope/pkg/reports"
+	"github.com/ounissi-zakaria/bbscope/pkg/whttp"
 )
 
 var reportsH1Cmd = &cobra.Command{

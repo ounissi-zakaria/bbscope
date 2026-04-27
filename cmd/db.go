@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/sw33tLie/bbscope/v2/pkg/scope"
-	"github.com/sw33tLie/bbscope/v2/pkg/storage"
+	"github.com/ounissi-zakaria/bbscope/pkg/scope"
+	"github.com/ounissi-zakaria/bbscope/pkg/storage"
 )
 
 // dbCmd represents the db command

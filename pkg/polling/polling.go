@@ -5,10 +5,10 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/sw33tLie/bbscope/v2/pkg/ai"
-	"github.com/sw33tLie/bbscope/v2/pkg/platforms"
-	"github.com/sw33tLie/bbscope/v2/pkg/scope"
-	"github.com/sw33tLie/bbscope/v2/pkg/storage"
+	"github.com/ounissi-zakaria/bbscope/pkg/ai"
+	"github.com/ounissi-zakaria/bbscope/pkg/platforms"
+	"github.com/ounissi-zakaria/bbscope/pkg/scope"
+	"github.com/ounissi-zakaria/bbscope/pkg/storage"
 )
 
 // Logger abstracts logging so callers can use logrus, stdlib log, or any

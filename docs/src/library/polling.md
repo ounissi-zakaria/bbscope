@@ -1,7 +1,7 @@
 # Polling Package
 
 ```go
-import "github.com/sw33tLie/bbscope/v2/pkg/polling"
+import "github.com/ounissi-zakaria/bbscope/pkg/polling"
 ```
 
 The `polling` package provides the high-level orchestrator that both the CLI and web server use. It handles the full lifecycle of polling a single platform: listing programs, fetching scopes concurrently, AI normalization with DB caching, upserting to the database, and tracking changes.
@@ -68,9 +68,9 @@ import (
     "fmt"
     "log"
 
-    h1 "github.com/sw33tLie/bbscope/v2/pkg/platforms/hackerone"
-    "github.com/sw33tLie/bbscope/v2/pkg/polling"
-    "github.com/sw33tLie/bbscope/v2/pkg/storage"
+    h1 "github.com/ounissi-zakaria/bbscope/pkg/platforms/hackerone"
+    "github.com/ounissi-zakaria/bbscope/pkg/polling"
+    "github.com/ounissi-zakaria/bbscope/pkg/storage"
 )
 
 type myLogger struct{}

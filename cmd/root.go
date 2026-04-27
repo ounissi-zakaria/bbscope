@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
-	"github.com/sw33tLie/bbscope/v2/internal/utils"
-	"github.com/sw33tLie/bbscope/v2/pkg/whttp"
+	"github.com/ounissi-zakaria/bbscope/internal/utils"
+	"github.com/ounissi-zakaria/bbscope/pkg/whttp"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"

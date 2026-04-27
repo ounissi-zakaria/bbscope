@@ -7,5 +7,5 @@ src = "src"
 [output.html]
 default-theme = "navy"
 preferred-dark-theme = "navy"
-git-repository-url = "https://github.com/sw33tLie/bbscope"
-edit-url-template = "https://github.com/sw33tLie/bbscope/edit/main/docs/{path}"
+git-repository-url = "https://github.com/ounissi-zakaria/bbscope"
+edit-url-template = "https://github.com/ounissi-zakaria/bbscope/edit/main/docs/{path}"

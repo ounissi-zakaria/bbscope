@@ -5,7 +5,7 @@ bbscope's packages under `pkg/` are designed to be importable by other Go projec
 ## Install
 
 ```bash
-go get github.com/sw33tLie/bbscope/v2@latest
+go get github.com/ounissi-zakaria/bbscope@latest
 ```
 
 ## Packages
@@ -29,8 +29,8 @@ import (
     "fmt"
     "log"
 
-    "github.com/sw33tLie/bbscope/v2/pkg/platforms"
-    h1 "github.com/sw33tLie/bbscope/v2/pkg/platforms/hackerone"
+    "github.com/ounissi-zakaria/bbscope/pkg/platforms"
+    h1 "github.com/ounissi-zakaria/bbscope/pkg/platforms/hackerone"
 )
 
 func main() {

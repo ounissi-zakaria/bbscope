@@ -11,7 +11,7 @@ import (
 	"time"
 
 	_ "modernc.org/sqlite"
-	"github.com/sw33tLie/bbscope/v2/pkg/scope"
+	"github.com/ounissi-zakaria/bbscope/pkg/scope"
 )
 
 var (

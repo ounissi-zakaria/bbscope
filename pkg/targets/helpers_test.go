@@ -1,6 +1,6 @@
 package targets
 
-import "github.com/sw33tLie/bbscope/v2/pkg/storage"
+import "github.com/ounissi-zakaria/bbscope/pkg/storage"
 
 func mkEntries(targets ...struct{ t string; inScope bool }) []storage.Entry {
 	var result []storage.Entry

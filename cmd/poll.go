@@ -9,16 +9,16 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/sw33tLie/bbscope/v2/internal/utils"
-	"github.com/sw33tLie/bbscope/v2/pkg/ai"
-	"github.com/sw33tLie/bbscope/v2/pkg/platforms"
-	bcplatform "github.com/sw33tLie/bbscope/v2/pkg/platforms/bugcrowd"
-	h1platform "github.com/sw33tLie/bbscope/v2/pkg/platforms/hackerone"
-	itplatform "github.com/sw33tLie/bbscope/v2/pkg/platforms/intigriti"
-	ywhplatform "github.com/sw33tLie/bbscope/v2/pkg/platforms/yeswehack"
-	"github.com/sw33tLie/bbscope/v2/pkg/polling"
-	"github.com/sw33tLie/bbscope/v2/pkg/scope"
-	"github.com/sw33tLie/bbscope/v2/pkg/storage"
+	"github.com/ounissi-zakaria/bbscope/internal/utils"
+	"github.com/ounissi-zakaria/bbscope/pkg/ai"
+	"github.com/ounissi-zakaria/bbscope/pkg/platforms"
+	bcplatform "github.com/ounissi-zakaria/bbscope/pkg/platforms/bugcrowd"
+	h1platform "github.com/ounissi-zakaria/bbscope/pkg/platforms/hackerone"
+	itplatform "github.com/ounissi-zakaria/bbscope/pkg/platforms/intigriti"
+	ywhplatform "github.com/ounissi-zakaria/bbscope/pkg/platforms/yeswehack"
+	"github.com/ounissi-zakaria/bbscope/pkg/polling"
+	"github.com/ounissi-zakaria/bbscope/pkg/scope"
+	"github.com/ounissi-zakaria/bbscope/pkg/storage"
 )
 
 // pollCmd implements: bbscope poll

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/sw33tLie/bbscope/v2/pkg/storage"
+	"github.com/ounissi-zakaria/bbscope/pkg/storage"
 )
 
 // ignoreCmd represents the ignore command

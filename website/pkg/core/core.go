@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sw33tLie/bbscope/v2/pkg/scope"
-	"github.com/sw33tLie/bbscope/v2/pkg/storage"
+	"github.com/ounissi-zakaria/bbscope/pkg/scope"
+	"github.com/ounissi-zakaria/bbscope/pkg/storage"
 	g "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html" // Using . import for convenience with html tags
 )
@@ -217,7 +217,7 @@ func MainContent(totalPrograms, totalAssets, platformCount int) g.Node {
 							Span(Class("text-cyan-400 hero-accent"), g.Text("Scope")),
 							g.Text(" in One Place"),
 						),
-						P(Class("max-w-2xl mx-auto mt-6 text-base md:text-lg leading-relaxed text-zinc-400"), g.Raw("This website collects public bug bounty targets fetched with <a href='https://github.com/sw33tLie/bbscope' class='text-cyan-400 hover:text-cyan-300 underline'>bbscope cli</a>.<br>We have a few extra tools too!")),
+						P(Class("max-w-2xl mx-auto mt-6 text-base md:text-lg leading-relaxed text-zinc-400"), g.Raw("This website collects public bug bounty targets fetched with <a href='https://github.com/ounissi-zakaria/bbscope' class='text-cyan-400 hover:text-cyan-300 underline'>bbscope cli</a>.<br>We have a few extra tools too!")),
 						Div(Class("flex flex-col sm:flex-row justify-center items-center w-full max-w-2xl gap-3 mx-auto mt-6"),
 							A(Href("/scope"), Class("px-8 py-3.5 text-base font-semibold text-center text-white transition-all duration-300 bg-cyan-600 lg:px-10 rounded-lg hover:bg-cyan-500 hover:shadow-lg hover:shadow-cyan-500/25 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-950 focus:ring-cyan-500"), g.Text("View scope")),
 							A(Href("/updates"), Class("px-8 py-3.5 text-base font-semibold text-center text-cyan-400 transition-all duration-300 border border-zinc-600 lg:px-10 rounded-lg hover:border-cyan-400 hover:bg-cyan-400/5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-950 focus:ring-cyan-500"), g.Text("Latest changes")),
@@ -306,7 +306,7 @@ func MainContent(totalPrograms, totalAssets, platformCount int) g.Node {
 			Div(Class("container mx-auto text-center px-4"),
 				H2(Class("text-2xl font-bold text-zinc-100 mb-4"), g.Text("Want to help?")),
 				P(Class("text-zinc-400 mb-8 max-w-xl mx-auto"), g.Text("This tool is powered by the bbscope CLI tool. Pull requests are welcome!")),
-				A(Href("https://github.com/sw33tLie/bbscope"), Target("_blank"), Rel("noopener noreferrer"), Class("bg-emerald-500 hover:bg-emerald-400 text-white font-semibold py-3 px-8 rounded-lg text-base transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/25"),
+				A(Href("https://github.com/ounissi-zakaria/bbscope"), Target("_blank"), Rel("noopener noreferrer"), Class("bg-emerald-500 hover:bg-emerald-400 text-white font-semibold py-3 px-8 rounded-lg text-base transition-all duration-300 hover:shadow-lg hover:shadow-emerald-500/25"),
 					g.Text("Go to GitHub"),
 				),
 			),
@@ -333,7 +333,7 @@ func FooterEl() g.Node {
 			Div(Class("flex flex-col md:flex-row justify-between items-center gap-4"),
 				P(Class("text-sm"), g.Raw(fmt.Sprintf("© %d bbscope.com. Made by <a href='https://x.com/sw33tLie' class='text-zinc-400 hover:text-cyan-400 transition-colors duration-200'>sw33tLie</a>", currentYear))),
 				Div(Class("flex items-center gap-6"),
-					A(Href("https://github.com/sw33tLie/bbscope"), Target("_blank"), Rel("noopener noreferrer"),
+					A(Href("https://github.com/ounissi-zakaria/bbscope"), Target("_blank"), Rel("noopener noreferrer"),
 						Class("text-zinc-500 hover:text-zinc-300 transition-colors duration-200 text-sm"),
 						g.Text("GitHub"),
 					),

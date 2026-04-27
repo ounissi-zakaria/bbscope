@@ -17,10 +17,10 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/hashicorp/go-retryablehttp"
-	"github.com/sw33tLie/bbscope/v2/internal/utils"
-	"github.com/sw33tLie/bbscope/v2/pkg/otp"
-	"github.com/sw33tLie/bbscope/v2/pkg/scope"
-	"github.com/sw33tLie/bbscope/v2/pkg/whttp"
+	"github.com/ounissi-zakaria/bbscope/internal/utils"
+	"github.com/ounissi-zakaria/bbscope/pkg/otp"
+	"github.com/ounissi-zakaria/bbscope/pkg/scope"
+	"github.com/ounissi-zakaria/bbscope/pkg/whttp"
 	"github.com/tidwall/gjson"
 )
 

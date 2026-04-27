@@ -47,7 +47,7 @@ func ContactContent() g.Node {
 		Section(Class("bg-zinc-900/30 border border-zinc-800/50 rounded-2xl shadow-xl shadow-black/10 p-6 md:p-8 mb-6"),
 			H2(Class("text-lg font-semibold text-white mb-3"), g.Text("Found a Bug?")),
 			P(Class("text-zinc-400 leading-relaxed mb-4"), g.Text("Found an issue with bbscope or this website? Pull requests are welcome!")),
-			A(Href("https://github.com/sw33tLie/bbscope"), Target("_blank"), Rel("noopener noreferrer"),
+			A(Href("https://github.com/ounissi-zakaria/bbscope"), Target("_blank"), Rel("noopener noreferrer"),
 				Class("inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 rounded-lg text-sm text-white font-medium hover:bg-cyan-500 transition-all duration-200 hover:shadow-md hover:shadow-cyan-500/20"),
 				g.Text("Open an Issue"),
 			),

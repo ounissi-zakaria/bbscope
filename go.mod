@@ -1,4 +1,4 @@
-module github.com/sw33tLie/bbscope/v2
+module github.com/ounissi-zakaria/bbscope
 
 go 1.25.0
 
@@ -12,13 +12,14 @@ require (
 	github.com/tidwall/gjson v1.8.1
 	github.com/weppos/publicsuffix-go v0.50.0
 	golang.org/x/net v0.44.0
+	maragu.dev/gomponents v1.1.0
+	modernc.org/sqlite v1.50.0
 )
 
 require (
 	github.com/andybalholm/cascadia v1.1.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
-	github.com/gomarkdown/markdown v0.0.0-20260217112301-37c66b85d6ab // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
@@ -43,9 +44,7 @@ require (
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	maragu.dev/gomponents v1.1.0 // indirect
 	modernc.org/libc v1.72.0 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
-	modernc.org/sqlite v1.50.0 // indirect
 )

@@ -3,7 +3,7 @@ package targets
 import (
 	"testing"
 
-	"github.com/sw33tLie/bbscope/v2/pkg/storage"
+	"github.com/ounissi-zakaria/bbscope/pkg/storage"
 )
 
 func TestCollectOOSWildcards_PartialWildcards(t *testing.T) {

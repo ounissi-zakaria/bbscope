@@ -5,7 +5,7 @@ package targets
 import (
 	"sort"
 
-	"github.com/sw33tLie/bbscope/v2/pkg/storage"
+	"github.com/ounissi-zakaria/bbscope/pkg/storage"
 )
 
 // matchFunc returns true if the target string matches the desired type.

@@ -3,7 +3,7 @@ package targets
 import (
 	"strings"
 
-	"github.com/sw33tLie/bbscope/v2/pkg/storage"
+	"github.com/ounissi-zakaria/bbscope/pkg/storage"
 )
 
 // CollectDomains returns in-scope targets that are domains (not URLs, not IPs, not CIDRs).

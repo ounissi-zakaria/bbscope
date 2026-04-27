@@ -1,7 +1,7 @@
 # Targets Package
 
 ```go
-import "github.com/sw33tLie/bbscope/v2/pkg/targets"
+import "github.com/ounissi-zakaria/bbscope/pkg/targets"
 ```
 
 The `targets` package extracts specific target types from scope entries. It handles deduplication, sorting, and filtering.

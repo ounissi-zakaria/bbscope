@@ -1,7 +1,7 @@
 # Storage Package
 
 ```go
-import "github.com/sw33tLie/bbscope/v2/pkg/storage"
+import "github.com/ounissi-zakaria/bbscope/pkg/storage"
 ```
 
 The `storage` package provides the SQLite persistence layer. It handles schema creation, scope upserts with change detection, querying, and searching.

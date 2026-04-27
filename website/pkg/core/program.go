@@ -10,8 +10,8 @@ import (
 
 	"time"
 
-	"github.com/sw33tLie/bbscope/v2/pkg/scope"
-	"github.com/sw33tLie/bbscope/v2/pkg/storage"
+	"github.com/ounissi-zakaria/bbscope/pkg/scope"
+	"github.com/ounissi-zakaria/bbscope/pkg/storage"
 	g "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
 )

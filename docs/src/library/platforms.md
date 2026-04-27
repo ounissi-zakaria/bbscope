@@ -1,7 +1,7 @@
 # Platforms Package
 
 ```go
-import "github.com/sw33tLie/bbscope/v2/pkg/platforms"
+import "github.com/ounissi-zakaria/bbscope/pkg/platforms"
 ```
 
 The `platforms` package defines the interface that all platform pollers implement, plus shared types.
@@ -49,11 +49,11 @@ Import the specific platform package:
 
 ```go
 import (
-    h1  "github.com/sw33tLie/bbscope/v2/pkg/platforms/hackerone"
-    bc  "github.com/sw33tLie/bbscope/v2/pkg/platforms/bugcrowd"
-    it  "github.com/sw33tLie/bbscope/v2/pkg/platforms/intigriti"
-    ywh "github.com/sw33tLie/bbscope/v2/pkg/platforms/yeswehack"
-    imm "github.com/sw33tLie/bbscope/v2/pkg/platforms/immunefi"
+    h1  "github.com/ounissi-zakaria/bbscope/pkg/platforms/hackerone"
+    bc  "github.com/ounissi-zakaria/bbscope/pkg/platforms/bugcrowd"
+    it  "github.com/ounissi-zakaria/bbscope/pkg/platforms/intigriti"
+    ywh "github.com/ounissi-zakaria/bbscope/pkg/platforms/yeswehack"
+    imm "github.com/ounissi-zakaria/bbscope/pkg/platforms/immunefi"
 )
 ```
 

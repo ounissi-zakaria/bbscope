@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/sw33tLie/bbscope/v2/website/pkg/core"
+	"github.com/ounissi-zakaria/bbscope/website/pkg/core"
 )
 
 var serveCmd = &cobra.Command{

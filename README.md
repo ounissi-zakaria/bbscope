@@ -45,7 +45,7 @@ Visit [bbscope.com](https://bbscope.com/) to explore an hourly-updated list of p
 Ensure you have a recent version of Go installed, then run:
 
 ```bash
-go install github.com/sw33tLie/bbscope/v2@latest
+go install github.com/ounissi-zakaria/bbscope@latest
 ```
 
 ### Docker Installation
