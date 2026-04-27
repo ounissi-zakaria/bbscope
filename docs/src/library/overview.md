@@ -14,7 +14,7 @@ go get github.com/sw33tLie/bbscope/v2@latest
 |---------|--------|---------|
 | [`polling`](./polling.md) | `pkg/polling` | High-level orchestrator: poll a platform, upsert to DB, track changes |
 | [`platforms`](./platforms.md) | `pkg/platforms` | Platform interface + implementations for H1, BC, IT, YWH, Immunefi |
-| [`storage`](./storage.md) | `pkg/storage` | PostgreSQL storage layer: upsert, query, search, change tracking |
+| [`storage`](./storage.md) | `pkg/storage` | SQLite storage layer: upsert, query, search, change tracking |
 | [`targets`](./targets.md) | `pkg/targets` | Extract wildcards, domains, URLs, IPs, CIDRs from scope entries |
 | `scope` | `pkg/scope` | Core types (`ProgramData`, `ScopeElement`) and category normalization |
 | `ai` | `pkg/ai` | AI normalization interface and OpenAI implementation |

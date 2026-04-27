@@ -6,7 +6,7 @@
 
 - **Polls** all major bug bounty platforms and fetches program scopes
 - **Tracks changes** — new targets, removed targets, scope updates — across poll cycles
-- **Stores** everything in PostgreSQL for querying, searching, and diffing
+- **Stores** everything in SQLite for querying, searching, and diffing
 - **Normalizes** messy scope entries using AI (optional, OpenAI-compatible)
 - **Serves** a web UI with search, filtering, stats, and a REST API
 - **Extracts** specific target types (wildcards, domains, URLs, IPs, CIDRs) ready for recon tools

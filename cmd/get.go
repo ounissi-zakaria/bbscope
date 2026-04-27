@@ -17,12 +17,12 @@ var getCmd = &cobra.Command{
 }
 
 func getAndPrintTargets(targetType string, aggressive bool) error {
-	dbURL, err := GetDBConnectionString()
+	dbPath, err := GetDBPath()
 	if err != nil {
 		return err
 	}
 
-	db, err := storage.Open(dbURL)
+	db, err := storage.Open(dbPath)
 	if err != nil {
 		return err
 	}

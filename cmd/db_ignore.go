@@ -45,12 +45,12 @@ func resolveProgramPattern(cmd *cobra.Command) (string, error) {
 }
 
 func setIgnoreStatus(ctx context.Context, pattern string, ignored bool) error {
-	dbURL, err := GetDBConnectionString()
+	dbPath, err := GetDBPath()
 	if err != nil {
 		return err
 	}
 
-	db, err := storage.Open(dbURL)
+	db, err := storage.Open(dbPath)
 	if err != nil {
 		return err
 	}

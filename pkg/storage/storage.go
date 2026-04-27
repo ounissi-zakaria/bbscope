@@ -5,11 +5,12 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
-	"github.com/lib/pq"
+	_ "modernc.org/sqlite"
 	"github.com/sw33tLie/bbscope/v2/pkg/scope"
 )
 
@@ -24,7 +25,7 @@ type DB struct {
 
 const schema = `
 CREATE TABLE IF NOT EXISTS programs (
-	id        SERIAL PRIMARY KEY,
+	id        INTEGER PRIMARY KEY AUTOINCREMENT,
 	platform  TEXT NOT NULL,
 	handle    TEXT NOT NULL,
 	url       TEXT NOT NULL UNIQUE,
@@ -37,7 +38,7 @@ CREATE TABLE IF NOT EXISTS programs (
 CREATE INDEX IF NOT EXISTS idx_programs_platform ON programs(platform);
 CREATE INDEX IF NOT EXISTS idx_programs_url ON programs(url);
 CREATE TABLE IF NOT EXISTS targets_raw (
-	id                SERIAL PRIMARY KEY,
+	id                INTEGER PRIMARY KEY AUTOINCREMENT,
 	program_id        INTEGER NOT NULL,
 	target            TEXT NOT NULL,
 	category          TEXT NOT NULL,
@@ -52,7 +53,7 @@ CREATE TABLE IF NOT EXISTS targets_raw (
 CREATE INDEX IF NOT EXISTS idx_targets_raw_program_id ON targets_raw(program_id);
 CREATE INDEX IF NOT EXISTS idx_targets_raw_program_bbp ON targets_raw(program_id, is_bbp);
 CREATE TABLE IF NOT EXISTS targets_ai_enhanced (
-	id                   SERIAL PRIMARY KEY,
+	id                   INTEGER PRIMARY KEY AUTOINCREMENT,
 	target_id            INTEGER NOT NULL,
 	target_ai_normalized TEXT NOT NULL,
 	category             TEXT,
@@ -64,7 +65,7 @@ CREATE TABLE IF NOT EXISTS targets_ai_enhanced (
 );
 CREATE INDEX IF NOT EXISTS idx_targets_ai_enhanced_target_id ON targets_ai_enhanced(target_id);
 CREATE TABLE IF NOT EXISTS scope_changes (
-	id                SERIAL PRIMARY KEY,
+	id                INTEGER PRIMARY KEY AUTOINCREMENT,
 	occurred_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	program_url       TEXT NOT NULL,
 	platform          TEXT NOT NULL,
@@ -85,70 +86,27 @@ CREATE INDEX IF NOT EXISTS idx_programs_disabled_ignored ON programs(disabled, i
 CREATE INDEX IF NOT EXISTS idx_targets_raw_in_scope ON targets_raw(program_id, in_scope);
 `
 
-func Open(connectionString string) (*DB, error) {
-	// connectionString is expected to be a valid Postgres connection URL or DSN
-	// e.g. "postgres://user:password@localhost/dbname?sslmode=disable"
-	db, err := sql.Open("postgres", connectionString)
+func Open(dbPath string) (*DB, error) {
+	if err := os.MkdirAll(filepath.Dir(dbPath), 0755); err != nil {
+		return nil, fmt.Errorf("creating database directory: %w", err)
+	}
+
+	dsn := dbPath + "?_pragma=foreign_keys(1)&_pragma=journal_mode(WAL)&_pragma=busy_timeout(5000)"
+	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		return nil, err
 	}
-	db.SetMaxOpenConns(20)
-	db.SetMaxIdleConns(5)
+	db.SetMaxOpenConns(5)
+	db.SetMaxIdleConns(2)
 	db.SetConnMaxLifetime(5 * time.Minute)
 	if err := db.Ping(); err != nil {
-		// Check if database doesn't exist, try to create it
-		if strings.Contains(err.Error(), "does not exist") {
-			if createErr := createDatabase(connectionString); createErr != nil {
-				return nil, fmt.Errorf("database does not exist and failed to create: %w", createErr)
-			}
-			// Retry connection after creating database
-			if err = db.Ping(); err != nil {
-				return nil, err
-			}
-		} else {
-			return nil, err
-		}
+		return nil, err
 	}
+
 	if _, err := db.Exec(schema); err != nil {
 		return nil, fmt.Errorf("migrating schema: %w", err)
 	}
 	return &DB{sql: db}, nil
-}
-
-// createDatabase connects to the default "postgres" database and creates the target database
-func createDatabase(connectionString string) error {
-	parsed, err := url.Parse(connectionString)
-	if err != nil {
-		return fmt.Errorf("parsing connection string: %w", err)
-	}
-
-	// Extract database name from path (e.g., "/bbscope" -> "bbscope")
-	dbName := strings.TrimPrefix(parsed.Path, "/")
-	if dbName == "" {
-		return errors.New("no database name in connection string")
-	}
-
-	// Create connection string for the default "postgres" database
-	parsed.Path = "/postgres"
-	adminConnStr := parsed.String()
-
-	adminDB, err := sql.Open("postgres", adminConnStr)
-	if err != nil {
-		return fmt.Errorf("connecting to postgres database: %w", err)
-	}
-	defer adminDB.Close()
-
-	if err := adminDB.Ping(); err != nil {
-		return fmt.Errorf("pinging postgres database: %w", err)
-	}
-
-	// Create the database (identifier can't be parameterized, but we validated it came from the URL)
-	_, err = adminDB.Exec(fmt.Sprintf(`CREATE DATABASE %q`, dbName))
-	if err != nil {
-		return fmt.Errorf("creating database %s: %w", dbName, err)
-	}
-
-	return nil
 }
 
 func (d *DB) Close() error {
@@ -382,67 +340,50 @@ func (d *DB) UpsertProgramEntries(ctx context.Context, programURL, platform, han
 		}
 	}
 
-	// 4. Start a transaction for all the batched write operations
+	// Bulk insert individual prepared statements inside a transaction
 	if len(toAdd) > 0 {
-		// Prepare arrays for bulk insert using UNNEST
-		targets := make([]string, len(toAdd))
-		categories := make([]string, len(toAdd))
-		descriptions := make([]sql.NullString, len(toAdd))
-		inScopes := make([]int, len(toAdd))
-		isBBPs := make([]int, len(toAdd))
-
-		// Build a lookup map for matching returned rows
-		addEntryByKey := make(map[string]UpsertEntry, len(toAdd))
-		for i, e := range toAdd {
-			targets[i] = e.TargetRaw
-			categories[i] = e.Category
-			if e.Description != "" {
-				descriptions[i] = sql.NullString{String: e.Description, Valid: true}
-			}
-			inScopes[i] = boolToInt(e.InScope)
-			isBBPs[i] = boolToInt(e.IsBBP)
-			addEntryByKey[identityKey(e.TargetRaw, e.Category)] = e
+		tx, err := d.sql.BeginTx(ctx, &sql.TxOptions{})
+		if err != nil {
+			return nil, err
 		}
-
-		// Bulk insert using UNNEST - returns id, target, category to match back
-		rows, err := d.sql.QueryContext(ctx, `
+		stmt, err := tx.PrepareContext(ctx, `
 			INSERT INTO targets_raw(program_id, target, category, description, in_scope, is_bbp, first_seen_at, last_seen_at)
-			SELECT $1, t.target, t.category, t.description, t.in_scope, t.is_bbp, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-			FROM UNNEST($2::text[], $3::text[], $4::text[], $5::int[], $6::int[]) AS t(target, category, description, in_scope, is_bbp)
+			VALUES($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 			ON CONFLICT(program_id, category, target) DO UPDATE SET
 				description = excluded.description,
 				in_scope = excluded.in_scope,
 				is_bbp = excluded.is_bbp,
 				last_seen_at = CURRENT_TIMESTAMP
 			RETURNING id, target, category
-		`, programID, pq.Array(targets), pq.Array(categories), pq.Array(descriptions), pq.Array(inScopes), pq.Array(isBBPs))
+		`)
 		if err != nil {
-			return nil, fmt.Errorf("bulk inserting targets: %w", err)
+			tx.Rollback()
+			return nil, err
 		}
-
-		for rows.Next() {
+		for _, e := range toAdd {
 			var id int64
 			var target, category string
-			if err := rows.Scan(&id, &target, &category); err != nil {
-				rows.Close()
-				return nil, err
+			if err := stmt.QueryRowContext(ctx, programID, e.TargetRaw, e.Category, nullIfEmpty(e.Description), boolToInt(e.InScope), boolToInt(e.IsBBP)).Scan(&id, &target, &category); err != nil {
+				stmt.Close()
+				tx.Rollback()
+				return nil, fmt.Errorf("inserting target: %w", err)
 			}
 			key := identityKey(target, category)
 			targetIDs[key] = id
-			if e, ok := addEntryByKey[key]; ok {
-				ex := &existingTarget{
-					ID:       id,
-					Raw:      e.TargetRaw,
-					Cat:      e.Category,
-					Desc:     e.Description,
-					InScope:  e.InScope,
-					IsBBP:    e.IsBBP,
-					Variants: make(map[string]existingVariant),
-				}
-				existingMap[key] = ex
+			existingMap[key] = &existingTarget{
+				ID:       id,
+				Raw:      e.TargetRaw,
+				Cat:      e.Category,
+				Desc:     e.Description,
+				InScope:  e.InScope,
+				IsBBP:    e.IsBBP,
+				Variants: make(map[string]existingVariant),
 			}
 		}
-		rows.Close()
+		stmt.Close()
+		if err := tx.Commit(); err != nil {
+			return nil, err
+		}
 	}
 
 	// Batch Updates
@@ -470,11 +411,27 @@ func (d *DB) UpsertProgramEntries(ctx context.Context, programURL, platform, han
 		}
 	}
 
-	// Batch Touches (update last_seen_at) - single query using ANY
+	// Batch Touches (update last_seen_at) - individual prepared statements inside a transaction
 	if len(toTouch) > 0 {
-		_, err := d.sql.ExecContext(ctx, `UPDATE targets_raw SET last_seen_at = CURRENT_TIMESTAMP WHERE id = ANY($1::bigint[])`, pq.Array(toTouch))
+		tx, err := d.sql.BeginTx(ctx, &sql.TxOptions{})
 		if err != nil {
-			return nil, fmt.Errorf("batch touching targets: %w", err)
+			return nil, err
+		}
+		stmt, err := tx.PrepareContext(ctx, `UPDATE targets_raw SET last_seen_at = CURRENT_TIMESTAMP WHERE id = $1`)
+		if err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+		for _, id := range toTouch {
+			if _, err := stmt.ExecContext(ctx, id); err != nil {
+				stmt.Close()
+				tx.Rollback()
+				return nil, fmt.Errorf("batch touching targets: %w", err)
+			}
+		}
+		stmt.Close()
+		if err := tx.Commit(); err != nil {
+			return nil, err
 		}
 	}
 
@@ -764,15 +721,27 @@ func (d *DB) UpsertProgramEntries(ctx context.Context, programURL, platform, han
 		}
 	}
 
-	// Batch Deletes - single query using ANY
+	// Batch Deletes - individual prepared statements inside a transaction
 	if len(toRemove) > 0 {
-		ids := make([]int64, len(toRemove))
-		for i, ex := range toRemove {
-			ids[i] = ex.ID
-		}
-		_, err := d.sql.ExecContext(ctx, `DELETE FROM targets_raw WHERE id = ANY($1::bigint[])`, pq.Array(ids))
+		tx, err := d.sql.BeginTx(ctx, &sql.TxOptions{})
 		if err != nil {
-			return nil, fmt.Errorf("batch deleting targets: %w", err)
+			return nil, err
+		}
+		stmt, err := tx.PrepareContext(ctx, `DELETE FROM targets_raw WHERE id = $1`)
+		if err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+		for _, ex := range toRemove {
+			if _, err := stmt.ExecContext(ctx, ex.ID); err != nil {
+				stmt.Close()
+				tx.Rollback()
+				return nil, fmt.Errorf("batch deleting targets: %w", err)
+			}
+		}
+		stmt.Close()
+		if err := tx.Commit(); err != nil {
+			return nil, err
 		}
 	}
 
@@ -1601,9 +1570,9 @@ func (d *DB) SearchTargets(ctx context.Context, searchTerm string) ([]Entry, err
 		JOIN programs p ON t.program_id = p.id
 		LEFT JOIN targets_ai_enhanced a ON a.target_id = t.id
 		WHERE p.is_ignored = 0 AND (
-			COALESCE(a.target_ai_normalized, t.target) ILIKE $1 OR
-			t.description ILIKE $2 OR
-			p.url ILIKE $3
+			LOWER(COALESCE(a.target_ai_normalized, t.target)) LIKE LOWER($1) OR
+			LOWER(t.description) LIKE LOWER($2) OR
+			LOWER(p.url) LIKE LOWER($3)
 		)
 
 		UNION
@@ -1623,7 +1592,11 @@ func (d *DB) SearchTargets(ctx context.Context, searchTerm string) ([]Entry, err
 			NULL as ai_id,
 			'historical' as source
 		FROM scope_changes c
-		WHERE (c.target_normalized ILIKE $4 OR c.target_ai_normalized ILIKE $5 OR c.program_url ILIKE $6)
+		WHERE (
+			LOWER(c.target_normalized) LIKE LOWER($4)
+			OR LOWER(c.target_ai_normalized) LIKE LOWER($5)
+			OR LOWER(c.program_url) LIKE LOWER($6)
+		)
 		AND NOT EXISTS (
 			SELECT 1 FROM targets_raw t2
 			JOIN programs p2 ON t2.program_id = p2.id

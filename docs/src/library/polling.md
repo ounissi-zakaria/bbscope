@@ -80,7 +80,7 @@ func (myLogger) Errorf(f string, a ...interface{}) { log.Printf("[ERROR] "+f, a.
 func (myLogger) Debugf(f string, a ...interface{}) {}
 
 func main() {
-    db, _ := storage.Open("postgres://user:pass@localhost/bbscope?sslmode=disable")
+    db, _ := storage.Open("/path/to/bbscope.db")
     defer db.Close()
 
     poller := h1.NewPoller("user", "token")

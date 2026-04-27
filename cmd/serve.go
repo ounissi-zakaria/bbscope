@@ -12,7 +12,7 @@ var serveCmd = &cobra.Command{
 	Short: "Start the bbscope.com web server",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		devMode, _ := cmd.Flags().GetBool("dev")
-		dbURL, err := GetDBConnectionString()
+		dbPath, err := GetDBPath()
 		if err != nil {
 			return err
 		}
@@ -22,7 +22,7 @@ var serveCmd = &cobra.Command{
 
 		return core.Run(core.ServerConfig{
 			DevMode:      devMode,
-			DBUrl:        dbURL,
+			DBPath:       dbPath,
 			PollInterval: pollInterval,
 			ListenAddr:   listenAddr,
 			Domain:       domain,

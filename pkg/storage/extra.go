@@ -253,12 +253,16 @@ func (d *DB) ListProgramsPaginated(ctx context.Context, opts ProgramListOptions)
 
 	if opts.Search != "" {
 		searchPattern := "%" + opts.Search + "%"
-		where += fmt.Sprintf(` AND (p.handle ILIKE $%d OR p.url ILIKE $%d OR EXISTS (
-			SELECT 1 FROM targets_raw t2
-			LEFT JOIN targets_ai_enhanced a2 ON a2.target_id = t2.id
-			WHERE t2.program_id = p.id
-			AND (COALESCE(NULLIF(a2.target_ai_normalized, ''), t2.target) ILIKE $%d)
-		))`, argIdx, argIdx+1, argIdx+2)
+		where += fmt.Sprintf(` AND (
+			LOWER(p.handle) LIKE LOWER($%d)
+			OR LOWER(p.url) LIKE LOWER($%d)
+			OR EXISTS (
+				SELECT 1 FROM targets_raw t2
+				LEFT JOIN targets_ai_enhanced a2 ON a2.target_id = t2.id
+				WHERE t2.program_id = p.id
+				AND LOWER(COALESCE(NULLIF(a2.target_ai_normalized, ''), t2.target)) LIKE LOWER($%d)
+			)
+		)`, argIdx, argIdx+1, argIdx+2)
 		args = append(args, searchPattern, searchPattern, searchPattern)
 		argIdx += 3
 	}

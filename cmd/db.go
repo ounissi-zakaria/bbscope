@@ -28,12 +28,12 @@ var statsCmd = &cobra.Command{
 	Short: "Prints statistics about the programs and assets in the database.",
 	Long:  "Prints statistics about the programs and assets in the database.",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		dbURL, err := GetDBConnectionString()
+		dbPath, err := GetDBPath()
 		if err != nil {
 			return err
 		}
 
-		db, err := storage.Open(dbURL)
+		db, err := storage.Open(dbPath)
 		if err != nil {
 			return err
 		}
@@ -80,12 +80,12 @@ Supported time formats for --since and --until:
 		limit, _ := cmd.Flags().GetInt("limit")
 		sinceStr, _ := cmd.Flags().GetString("since")
 		untilStr, _ := cmd.Flags().GetString("until")
-		dbURL, err := GetDBConnectionString()
+		dbPath, err := GetDBPath()
 		if err != nil {
 			return err
 		}
 
-		db, err := storage.Open(dbURL)
+		db, err := storage.Open(dbPath)
 		if err != nil {
 			return err
 		}
@@ -175,12 +175,12 @@ var printCmd = &cobra.Command{
 		sinceStr, _ := cmd.Flags().GetString("since")
 		format, _ := cmd.Flags().GetString("format")
 		includeIgnored, _ := cmd.Flags().GetBool("include-ignored")
-		dbURL, err := GetDBConnectionString()
+		dbPath, err := GetDBPath()
 		if err != nil {
 			return err
 		}
 
-		db, err := storage.Open(dbURL)
+		db, err := storage.Open(dbPath)
 		if err != nil {
 			return err
 		}
@@ -304,12 +304,12 @@ var findCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		searchTerm := args[0]
-		dbURL, err := GetDBConnectionString()
+		dbPath, err := GetDBPath()
 		if err != nil {
 			return err
 		}
 
-		db, err := storage.Open(dbURL)
+		db, err := storage.Open(dbPath)
 		if err != nil {
 			return err
 		}
@@ -346,14 +346,14 @@ var findCmd = &cobra.Command{
 
 var shellCmd = &cobra.Command{
 	Use:   "shell",
-	Short: "Open a psql shell to the database",
+	Short: "Open a sqlite3 shell to the database",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		dbURL, err := GetDBConnectionString()
+		dbPath, err := GetDBPath()
 		if err != nil {
 			return err
 		}
 
-		fmt.Printf("Connecting to %s...\n", dbURL)
+		fmt.Printf("Connecting to %s...\n", dbPath)
 		fmt.Println("bbscope database schema:")
 		fmt.Println("  programs      (id, platform, handle, url, disabled, is_ignored, last_seen_at)")
 		fmt.Println("  targets_raw   (id, program_id, target, category, in_scope, is_bbp, description, last_seen_at)")
@@ -361,13 +361,13 @@ var shellCmd = &cobra.Command{
 		fmt.Println("  targets_ai_enhanced (id, target_id, target_ai_normalized, category, in_scope)")
 		fmt.Println("")
 
-		pgCmd := exec.Command("psql", dbURL)
-		pgCmd.Stdin = os.Stdin
-		pgCmd.Stdout = os.Stdout
-		pgCmd.Stderr = os.Stderr
+		sqliteCmd := exec.Command("sqlite3", dbPath)
+		sqliteCmd.Stdin = os.Stdin
+		sqliteCmd.Stdout = os.Stdout
+		sqliteCmd.Stderr = os.Stderr
 
-		if err := pgCmd.Run(); err != nil {
-			return fmt.Errorf("psql exited with error: %w", err)
+		if err := sqliteCmd.Run(); err != nil {
+			return fmt.Errorf("sqlite3 exited with error: %w", err)
 		}
 
 		return nil
@@ -381,7 +381,7 @@ var addCmd = &cobra.Command{
 		target, _ := cmd.Flags().GetString("target")
 		category, _ := cmd.Flags().GetString("category")
 		programURL, _ := cmd.Flags().GetString("program-url")
-		dbURL, err := GetDBConnectionString()
+		dbPath, err := GetDBPath()
 		if err != nil {
 			return err
 		}
@@ -390,7 +390,7 @@ var addCmd = &cobra.Command{
 			return errors.New("target flag is required")
 		}
 
-		db, err := storage.Open(dbURL)
+		db, err := storage.Open(dbPath)
 		if err != nil {
 			return err
 		}

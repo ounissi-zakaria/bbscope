@@ -1,6 +1,6 @@
 # Docker Deployment
 
-The recommended way to deploy the web interface is with Docker Compose. The setup includes PostgreSQL, the bbscope web server, and Caddy as a reverse proxy with automatic HTTPS.
+The recommended way to deploy the web interface is with Docker Compose. The setup includes the bbscope web server and Caddy as a reverse proxy with automatic HTTPS.
 
 ## Quick start
 
@@ -14,14 +14,13 @@ docker compose up -d
 ## Architecture
 
 ```
-Internet → Caddy (443/80) → bbscope-web (8080) → PostgreSQL (5432)
+Internet → Caddy (443/80) → bbscope-web (8080)
 ```
 
-Three services:
+Two services:
 
-1. **postgres** (PostgreSQL 16 Alpine) — data storage with health checks and a persistent volume
-2. **bbscope-web** — the bbscope web server, polls platforms on a schedule
-3. **caddy** (Caddy 2 Alpine) — reverse proxy with automatic TLS certificate management
+1. **bbscope-web** — the bbscope web server, polls platforms on a schedule. SQLite database is persisted in a named volume.
+2. **caddy** (Caddy 2 Alpine) — reverse proxy with automatic TLS certificate management
 
 ## Environment variables
 
@@ -33,7 +32,6 @@ cp .env.example .env
 
 Edit with your values. At minimum, set:
 
-- `POSTGRES_PASSWORD` — database password
 - `DOMAIN` — your public domain (used by Caddy for HTTPS)
 - At least one platform's credentials
 
@@ -75,8 +73,8 @@ docker compose logs -f bbscope-web | grep "Poller:"
 
 ## Data persistence
 
-PostgreSQL data is stored in a named volume (`bbscope-pgdata`). To back up:
+The SQLite database is stored in a named volume (`bbscope_data`) mounted at `/data/bbscope.db` inside the container. To back up:
 
 ```bash
-docker compose exec postgres pg_dump -U bbscope bbscope > backup.sql
+docker compose cp bbscope-web:/data/bbscope.db ./bbscope-backup.db
 ```

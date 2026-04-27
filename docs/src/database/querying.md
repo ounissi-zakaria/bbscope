@@ -45,7 +45,7 @@ For advanced queries, use the built-in shell:
 bbscope db shell
 ```
 
-This opens `psql` with the schema printed for reference. Example queries:
+This opens `sqlite3` with the schema printed for reference. Example queries:
 
 ```sql
 -- Programs with most in-scope targets
@@ -68,7 +68,7 @@ LIMIT 50;
 -- Programs added in the last 7 days
 SELECT url, platform, first_seen_at
 FROM programs
-WHERE first_seen_at > NOW() - INTERVAL '7 days'
+WHERE first_seen_at > datetime('now', '-7 days')
 ORDER BY first_seen_at DESC;
 ```
 

@@ -1,6 +1,6 @@
 # Configuration
 
-bbscope reads configuration from `~/.bbscope.yaml` by default. Override with `--config path/to/file.yaml`.
+bbscope reads configuration from `~/.bbscope/config.yaml` by default. Override with `--config path/to/file.yaml`.
 
 ## Config file
 
@@ -22,8 +22,7 @@ yeswehack:
   password: "your_password"
   otpsecret: "YOUR_TOTP_SECRET"
 
-db:
-  url: "postgres://user:pass@localhost:5432/bbscope?sslmode=disable"
+db_path: "/custom/path/to/bbscope.db"
 
 ai:
   api_key: "sk-..."
@@ -41,7 +40,7 @@ These flags apply to all commands:
 
 | Flag | Description |
 |------|-------------|
-| `--config` | Config file path (default `~/.bbscope.yaml`) |
+| `--config` | Config file path (default `~/.bbscope/config.yaml`) |
 | `--proxy` | HTTP proxy URL for platform requests |
 | `--loglevel` | Log level: `debug`, `info`, `warn`, `error`, `fatal` |
 | `--debug-http` | Log full HTTP requests and responses |

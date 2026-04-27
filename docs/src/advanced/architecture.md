@@ -23,7 +23,7 @@ bbscope/
 │   │   └── dev/
 │   ├── polling/            # Shared polling orchestrator
 │   │   └── polling.go
-│   ├── storage/            # PostgreSQL persistence
+│   ├── storage/            # SQLite persistence
 │   │   ├── storage.go      # DB operations
 │   │   ├── types.go        # Entry, Change, UpsertEntry, etc.
 │   │   ├── normalize.go    # Target normalization

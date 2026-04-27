@@ -7,7 +7,7 @@ Web interface and API for aggregating bug bounty program scopes from HackerOne, 
 ```bash
 cd website
 cp .env.example .env
-# Edit .env — at minimum set POSTGRES_PASSWORD and your platform credentials
+# Edit .env — at minimum set your platform credentials
 docker compose up -d --build
 ```
 
@@ -25,11 +25,10 @@ Set `CF_API_TOKEN` in your `.env`. Create the token at https://dash.cloudflare.c
 
 ## Local development
 
-Requirements: Go 1.24+, a running PostgreSQL instance.
+Requirements: Go 1.25+.
 
 ```bash
-DB_URL="postgres://postgres:yourpassword@localhost:5432/bbscope?sslmode=disable" \
-  go run *.go serve --dev --poll-interval 0 --listen localhost:7001
+go run *.go serve --dev --poll-interval 0 --listen localhost:7001
 ```
 
 The `--dev` flag enables HTTP-only mode (no TLS). `--poll-interval 0` disables background polling so you don't need platform credentials.
@@ -43,7 +42,7 @@ The `--dev` flag enables HTTP-only mode (no TLS). `--poll-interval 0` disables b
 | `--listen` | `:8080` | HTTP listen address |
 | `--domain` | `bbscope.com` | Domain for sitemap/robots.txt |
 
-The database connection is read from `DB_URL` env var or `db_url` in `~/.bbscope.yaml`.
+The database path is read from `DB_PATH` env var or `db_path` in `~/.bbscope/config.yaml` (defaults to `~/.bbscope/bbscope.db`).
 
 ## Configuration
 
@@ -90,12 +89,11 @@ To disable, remove `conf.d/basicauth.caddy` and restart.
 ## Architecture
 
 ```
-caddy (ports 80/443) → bbscope-web (:8080) → postgres
+caddy (ports 80/443) → bbscope-web (:8080)
 ```
 
 - **Caddy** handles TLS termination and reverse proxying. Extra config fragments in `conf.d/*.caddy` are auto-imported.
-- **bbscope-web** serves the site and runs background pollers.
-- **PostgreSQL** stores programs, targets, and scope change history. Schema is auto-migrated on startup.
+- **bbscope-web** serves the site and runs background pollers. SQLite stores programs, targets, and scope change history. Schema is auto-migrated on startup.
 
 ## API
 

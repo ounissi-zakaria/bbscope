@@ -2,7 +2,7 @@
 
 The `bbscope db` command group provides tools for querying and managing the scope database.
 
-All commands require a database connection, configured via `db.url` in the config file or `--db-url` flag.
+All commands require a database connection. The database path is read from `DB_PATH` env var or `db_path` in `~/.bbscope/config.yaml` (defaults to `~/.bbscope/bbscope.db`).
 
 ## Stats
 
@@ -89,7 +89,7 @@ bbscope db print --include-ignored
 
 ## Shell
 
-Open a `psql` shell connected to the bbscope database, with a schema reference printed:
+Open a `sqlite3` shell connected to the bbscope database, with a schema reference printed:
 
 ```bash
 bbscope db shell

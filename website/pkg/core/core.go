@@ -18,7 +18,7 @@ import (
 // ServerConfig holds configuration for the web server.
 type ServerConfig struct {
 	DevMode      bool
-	DBUrl        string
+	DBPath       string
 	PollInterval int
 	ListenAddr   string
 	Domain       string
@@ -763,7 +763,7 @@ func robotsTxtHandler(w http.ResponseWriter, r *http.Request) {
 
 func Run(cfg ServerConfig) error {
 	var err error
-	db, err = storage.Open(cfg.DBUrl)
+	db, err = storage.Open(cfg.DBPath)
 	if err != nil {
 		return fmt.Errorf("failed to open database: %w", err)
 	}

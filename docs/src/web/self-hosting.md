@@ -25,7 +25,7 @@ The web server reads platform credentials from environment variables:
 
 | Variable | Description |
 |----------|-------------|
-| `DB_URL` | PostgreSQL connection string |
+| `DB_PATH` | SQLite database file path |
 | `DOMAIN` | Public domain name |
 | `POLL_INTERVAL` | Hours between poll cycles |
 | `H1_USERNAME` | HackerOne username |

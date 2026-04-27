@@ -20,7 +20,7 @@ bbscope poll immunefi
 
 | Flag | Short | Default | Description |
 |------|-------|---------|-------------|
-| `--db` | | `false` | Save results to PostgreSQL and print changes |
+| `--db` | | `false` | Save results to SQLite and print changes |
 | `--ai` | | `false` | Enable AI normalization (requires `--db` and API key) |
 | `--concurrency` | | `5` | Concurrent program fetches per platform |
 | `--category` | | `all` | Filter by scope category (wildcard, url, cidr, etc.) |

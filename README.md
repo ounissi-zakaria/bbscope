@@ -13,7 +13,7 @@
 > *   **New:** `bbscope poll h1` (and similarly for `bc`, `it`, `ywh`, etc.)
 > 
 > **New Features in v2:**
-> *   **PostgreSQL Support (Optional)**: Store targets in a DB for persistence and querying.
+> *   **SQLite Database**: Store targets in a local DB for persistence and querying.
 > *   **Changes Monitoring**: Track new and removed targets over time (requires DB).
 > *   **AI Scope Normalization**: Use LLMs to clean up messy scope strings.
 > *   **Docker Image**: Ready-to-use image on GHCR.
@@ -31,7 +31,7 @@ Visit [bbscope.com](https://bbscope.com/) to explore an hourly-updated list of p
 ## ✨ Features
 
 - **Multi-Platform Support**: Aggregates scopes from all major bug bounty platforms.
-- **PostgreSQL Database**: Stores all scope data in a PostgreSQL database for reliable, concurrent access.
+- **SQLite Database**: Stores all scope data in an embedded SQLite database for reliable, concurrent access.
 - **Powerful Querying**: Easily print targets by type (URLs, wildcards, mobile, etc.), platform, or program.
 - **Track Changes**: Monitor scope additions and removals over time.
 - **LLM Cleanup (opt-in)**: Let GPT-style models fix messy scope strings in bulk when polling.
@@ -69,24 +69,21 @@ docker run --rm ghcr.io/sw33tlie/bbscope:latest [command] [flags]
 ```bash
 # Run with config mounted
 docker run --rm \
-  -v ~/.bbscope.yaml:/root/.bbscope.yaml \
+  -v ~/.bbscope:/root/.bbscope \
   ghcr.io/sw33tlie/bbscope:latest poll --db -b -p
 ```
 
-**Note:** The container connects to your PostgreSQL database using the `db_url` configured in `~/.bbscope.yaml`. Make sure your database is accessible from the container (use `host.docker.internal` for local databases on macOS/Windows, or your database's network address).
+**Note:** The container persists the SQLite database in a volume. To access it from the host, use `docker compose cp`.
 
 ---
 
 ## 🔐 Configuration
 
-`bbscope` requires API credentials for private programs and a PostgreSQL connection URL. After running the tool for the first time, it will create a configuration file at `~/.bbscope.yaml`.
+`bbscope` requires API credentials for private programs. After running the tool for the first time, it will create a configuration file at `~/.bbscope/config.yaml`.
 
-You'll need to fill in your credentials and database URL:
+You'll need to fill in your credentials:
 
 ```yaml
-# PostgreSQL connection URL
-db_url: "postgres://user:password@localhost:5432/bbscope?sslmode=disable"
-
 hackerone:
   username: "" # HackerOne username
   token: "" # https://docs.hackerone.com/en/articles/8410331-api-token
@@ -121,36 +118,12 @@ Alternatively, you can provide credentials directly via command-line flags when 
 | `poll ywh` | `--token` | A live YesWeHack bearer token. Use as an alternative to email/pass/otp. |
 | | `--email`, `--password`, `--otp-secret`| Your YesWeHack login credentials. |
 
-**Database Configuration (Optional):**
+**Database Configuration:**
 
-To use bbscope's database features (like tracking changes or querying targets), you need a PostgreSQL database.
-
-**Option 1: Use an existing PostgreSQL instance**
-
-Add your connection string to `~/.bbscope.yaml`:
+The database is automatically created at `~/.bbscope/bbscope.db`. You can override the path in `~/.bbscope/config.yaml`:
 
 ```yaml
-db_url: "postgres://user:password@localhost:5432/bbscope?sslmode=disable"
-```
-
-**Option 2: Quick setup with Docker**
-
-> [!IMPORTANT]
-> Replace `<YOUR_SECURE_PASSWORD>` with a strong, unique password.
-
-```bash
-docker run --name bbscope-db \
-  -e POSTGRES_USER=bbscope \
-  -e POSTGRES_PASSWORD=<YOUR_SECURE_PASSWORD> \
-  -e POSTGRES_DB=bbscope \
-  -p 5432:5432 \
-  -d postgres:alpine
-```
-
-Then add to your `~/.bbscope.yaml`:
-
-```yaml
-db_url: "postgres://bbscope:<YOUR_SECURE_PASSWORD>@localhost:5432/bbscope?sslmode=disable"
+db_path: "/custom/path/to/bbscope.db"
 ```
 
 Tables are automatically created on the first run.
@@ -208,7 +181,7 @@ bbscope poll --db --ai
 
 ### `db` - Interacting with the Database
 
-The `db` command lets you query and manage the data stored in your PostgreSQL database.
+The `db` command lets you query and manage the data stored in your SQLite database.
 
 #### `db print`
 
@@ -267,7 +240,7 @@ Search for a string in current and historical scopes.
 
 #### `db shell`
 
-Open a `psql` shell connected to your database.
+Open a `sqlite3` shell connected to your database.
 
 **Usage:** `bbscope db shell`
 
@@ -416,8 +389,7 @@ The `website/` folder contains the code powering [bbscope.com](https://bbscope.c
 You can run your own instance locally to browse and search your scopes visually — no need to expose anything to the internet. Unlike the public bbscope.com, your local instance can also poll your private programs, giving you a single dashboard for everything.
 
 ```bash
-DB_URL="postgres://user:password@localhost:5432/bbscope?sslmode=disable" \
-  go run *.go serve --dev --poll-interval 0
+go run *.go serve --dev --poll-interval 0
 ```
 
 This starts the web UI on `localhost:7000`. If you want polling to run in the background, set `--poll-interval` to the desired hours between cycles.

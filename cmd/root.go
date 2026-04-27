@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/sw33tLie/bbscope/v2/internal/utils"
@@ -65,7 +66,7 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.bbscope.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.bbscope/config.yaml)")
 	rootCmd.SetHelpCommand(&cobra.Command{
 		Use:    "no-help",
 		Hidden: true,
@@ -88,8 +89,8 @@ func initConfig() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".bbscope")
+		viper.AddConfigPath(filepath.Join(home, ".bbscope"))
+		viper.SetConfigName("config")
 		viper.SetConfigType("yaml")
 	}
 
@@ -100,9 +101,14 @@ func initConfig() {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Config file not found; create it with defaults.
 			home, _ := homedir.Dir()
-			configPath := home + "/.bbscope.yaml"
-			if err := viper.SafeWriteConfigAs(configPath); err != nil {
-				fmt.Printf("Error creating config file: %s", err)
+			configDir := filepath.Join(home, ".bbscope")
+			configPath := filepath.Join(configDir, "config.yaml")
+			if err := os.MkdirAll(configDir, 0755); err != nil {
+				fmt.Printf("Error creating config directory: %s", err)
+			} else {
+				if err := viper.SafeWriteConfigAs(configPath); err != nil {
+					fmt.Printf("Error creating config file: %s", err)
+				}
 			}
 		}
 	}
@@ -123,7 +129,9 @@ func initConfig() {
 	viper.SetDefault("ai.endpoint", "")
 	viper.SetDefault("ai.max_batch", 25)
 	viper.SetDefault("ai.max_concurrency", 3)
-	viper.SetDefault("db_url", "")
+
+	home, _ := homedir.Dir()
+	viper.SetDefault("db_path", filepath.Join(home, ".bbscope", "bbscope.db"))
 
 	// Init log library
 	levelString, _ := rootCmd.PersistentFlags().GetString("loglevel")
@@ -135,13 +143,17 @@ func initConfig() {
 
 }
 
-func GetDBConnectionString() (string, error) {
-	url := viper.GetString("db_url")
-	if url == "" {
-		url = os.Getenv("DB_URL")
+func GetDBPath() (string, error) {
+	path := viper.GetString("db_path")
+	if path == "" {
+		path = os.Getenv("DB_PATH")
 	}
-	if url == "" {
-		return "", fmt.Errorf("db_url not set. Set it in ~/.bbscope.yaml or via DB_URL environment variable")
+	if path == "" {
+		home, err := homedir.Dir()
+		if err != nil {
+			return "", fmt.Errorf("db_path not set and unable to determine home directory: %w", err)
+		}
+		path = filepath.Join(home, ".bbscope", "bbscope.db")
 	}
-	return url, nil
+	return path, nil
 }

@@ -26,12 +26,12 @@ func init() {
 }
 
 func runGetWildcardsCmd(cmd *cobra.Command, args []string) error {
-	dbURL, err := GetDBConnectionString()
+	dbPath, err := GetDBPath()
 	if err != nil {
 		return err
 	}
 
-	db, err := storage.Open(dbURL)
+	db, err := storage.Open(dbPath)
 	if err != nil {
 		return err
 	}

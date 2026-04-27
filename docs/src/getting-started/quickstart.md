@@ -27,11 +27,10 @@ bbscope poll -o tdu
 
 ## 3. Track changes with a database
 
-Set up PostgreSQL and add the connection string to your config:
+The database is automatically created at `~/.bbscope/bbscope.db`. You can override the path in your config:
 
 ```yaml
-db:
-  url: "postgres://user:pass@localhost:5432/bbscope?sslmode=disable"
+db_path: "/custom/path/to/bbscope.db"
 ```
 
 Then poll with `--db`:

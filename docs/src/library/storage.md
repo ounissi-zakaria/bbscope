@@ -4,12 +4,12 @@
 import "github.com/sw33tLie/bbscope/v2/pkg/storage"
 ```
 
-The `storage` package provides the PostgreSQL persistence layer. It handles schema creation, scope upserts with change detection, querying, and searching.
+The `storage` package provides the SQLite persistence layer. It handles schema creation, scope upserts with change detection, querying, and searching.
 
 ## Opening a connection
 
 ```go
-db, err := storage.Open("postgres://user:pass@localhost/bbscope?sslmode=disable")
+db, err := storage.Open("/path/to/bbscope.db")
 if err != nil {
     log.Fatal(err)
 }

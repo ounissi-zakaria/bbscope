@@ -140,11 +140,11 @@ func runPollWithPollers(cmd *cobra.Command, pollers []platforms.PlatformPoller) 
 		return runPollNoDB(cmd, pollers, opts)
 	}
 
-	dbURL, err := GetDBConnectionString()
+	dbPath, err := GetDBPath()
 	if err != nil {
 		return err
 	}
-	db, err := storage.Open(dbURL)
+	db, err := storage.Open(dbPath)
 	if err != nil {
 		return err
 	}
