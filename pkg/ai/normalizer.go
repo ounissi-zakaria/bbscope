@@ -249,8 +249,8 @@ func (n *openAINormalizer) queryLLM(ctx context.Context, info ProgramInfo, baseI
 			{Role: "system", Content: systemPrompt},
 			{Role: "user", Content: string(payloadJSON)},
 		},
-		Temperature:    0.1,
-		ResponseFormat: openAIResponseFormat{Type: "json_object"},
+		Temperature: 0.1,
+		//ResponseFormat: openAIResponseFormat{Type: "json_object"},
 	}
 
 	bodyBytes, err := json.Marshal(reqBody)
@@ -372,10 +372,10 @@ Output contract (strict)
 }
 
 type openAIChatRequest struct {
-	Model          string               `json:"model"`
-	Messages       []openAIMessage      `json:"messages"`
-	Temperature    float64              `json:"temperature"`
-	ResponseFormat openAIResponseFormat `json:"response_format"`
+	Model       string          `json:"model"`
+	Messages    []openAIMessage `json:"messages"`
+	Temperature float64         `json:"temperature"`
+	//ResponseFormat openAIResponseFormat `json:"response_format"`
 }
 
 type openAIMessage struct {
@@ -383,9 +383,9 @@ type openAIMessage struct {
 	Content string `json:"content"`
 }
 
-type openAIResponseFormat struct {
-	Type string `json:"type"`
-}
+// type openAIResponseFormat struct {
+// 	Type string `json:"type"`
+// }
 
 type openAIChatResponse struct {
 	Choices []struct {
